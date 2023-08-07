@@ -1,0 +1,19 @@
+{
+    "compilerOptions": {
+        "emitDecoratorMetadata": true,
+        "experimentalDecorators": true,
+        "target": "es6",
+        "module": "commonjs",
+        "rootDir": "src",
+        "outDir": "dist",
+        "sourceMap": true,
+        "esModuleInterop": true,
+        "strict": false,
+
+        // Other compiler options...
+    },
+    "include": ["src/**/*.ts", "src/dashboard.ts"],
+    "exclude": [
+        "node_modules"
+    ]
+}
