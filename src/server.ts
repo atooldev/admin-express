@@ -1,7 +1,7 @@
 import express from 'express';
 import { DataSourceOptions } from 'typeorm';
 import createDashboardMiddleware from './dashboard';
-import UserEnity from './typeorm/UserEnity';
+import { Organization, Person } from './sources/typeorm/models';
 // import UserEnity from './typeorm/UserEnity';
 const app = express();
 
@@ -18,12 +18,14 @@ const typeORMConfig: DataSourceOptions = {
 
 // Entities definition for TypeORM (replace with your actual entity definitions)
 const typeORMEntities = [
-    UserEnity,
+    Person,
+    Organization
 ];
 
 // Resources (if needed) to process the data before sending it to the client
 const resources = {
     processData: (data: any) => {
+
         // Implement your data processing logic here
         // For example, transform the data, filter unwanted fields, etc.
         return data;
