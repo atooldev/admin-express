@@ -1,9 +1,13 @@
 import express from 'express';
 import { DataSourceOptions } from 'typeorm';
 import createDashboardMiddleware from './dashboard';
-import { Organization, Person } from './sources/typeorm/models';
+import { User, Role, Post, UserProfile, } from './sources/typeorm/models';
+import cors from 'cors'
+import { Category } from './sources/typeorm/models/category.entity';
 // import UserEnity from './typeorm/UserEnity';
 const app = express();
+
+
 
 // Configuration for TypeORM
 const typeORMConfig: DataSourceOptions = {
@@ -18,8 +22,11 @@ const typeORMConfig: DataSourceOptions = {
 
 // Entities definition for TypeORM (replace with your actual entity definitions)
 const typeORMEntities = [
-    Person,
-    Organization
+    User,
+    Role,
+    UserProfile,
+    Post,
+    Category,
 ];
 
 // Resources (if needed) to process the data before sending it to the client
@@ -38,10 +45,11 @@ const resources = {
 // Create the dashboard middleware with the specified parameters
 const dashboardMiddleware = createDashboardMiddleware('typeorm', typeORMConfig, typeORMEntities, resources);
 
-// Use the dashboard middleware in your Express app
-app.use('/dashboard', dashboardMiddleware);
 
+// Use the dashboard middleware in your Express app
 // Add other routes and middleware as needed for your app
+app.use('/dashboard', dashboardMiddleware);
+app.use(cors());
 // ...
 
 // Start the server

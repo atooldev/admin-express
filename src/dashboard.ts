@@ -25,16 +25,12 @@ export default function createDashboardMiddleware(
 
   // Define a route to list all available entities/models
   app.get('/entities', (req: Request, res: Response) => {
-    // Extract entity names from dataModels and return them
-    // return object with name and label and unique id for each model
-    const entities = dataModels.map((model) => {
-      return {
-        name: model.name?.toLowerCase(),
-        label: model.name,
-      };
-    }
-    );
-    res.json({ data: entities });
+
+    const models = dataModels.map((model) => {
+      return dataAccess.getTableMetadata(model);
+    });
+
+    res.json({ data:models  });
   });
 
   // Define a route to fetch all records of a specific model
@@ -85,14 +81,14 @@ export default function createDashboardMiddleware(
     } catch (err) {
       console.error('Error fetching data from the database:', JSON.stringify(err));
       // return error trace
-    
+
       res.status(500).json({
         error: {
           message: 'An error occurred while fetching data',
-          meta:{
+          meta: {
             message: err.message,
             stack: err.stack,
-            code : err.code,
+            code: err.code,
           }
           // errro is empty object
         }
@@ -101,38 +97,25 @@ export default function createDashboardMiddleware(
   });
 
 
-  app.post('/entities/:entityName', async (req, res) => {
+  app.post('/entities/:modelName', async (req, res) => {
     try {
-      const entityName = req.params.entityName?.toLowerCase();
+      const entityName = req.params.modelName?.toLowerCase();
       // Check if the entityName is valid and exists in dataModels
       const entityModel = dataModels.find((model) => model.name?.toLowerCase() === entityName);
       if (!entityModel) {
         res.status(404).json({ error: 'Entity not found' });
         return;
       }
-
-      // validate request body
-      const fields = await dataAccess.getModelFields(entityModel);
-      // ignore id field
-      fields.shift();
       const body = req.body;
-      const bodyKeys = Object.keys(body);
-      const missingFields = fields.filter((field) => {
-        return field.required && !bodyKeys.includes(field.name);
-      });
-      if (missingFields.length > 0) {
-        res.status(400).json({ error: 'Missing required fields', fields: missingFields });
-        return;
-      }
 
-      const repository = dataAccess.getRepository(entityModel); // Get the TypeORM repository
+      // create record
+      const newRecord = await dataAccess.createData(entityModel, body);
 
-      // Create a new record using request body
-      const newRecord = repository.create(req.body);
+      // Process the records using the provided resources if needed
+      // For example, you can transform the data before sending it to the client
+      const processedData = resources.processData(newRecord);
 
-      // Save the new record
-      const savedRecord = await repository.save(newRecord);
-      res.status(201).json({ success: true, data: savedRecord });
+      res.status(201).json({ success: true, data: processedData });
     } catch (err) {
       console.error('Error adding data:', err);
       res.status(500).json({
@@ -143,6 +126,8 @@ export default function createDashboardMiddleware(
       });
     }
   });
+
+
   // get model fields
   app.get('/entities/:modelName/fields', async (req: Request, res: Response) => {
     try {
@@ -155,8 +140,8 @@ export default function createDashboardMiddleware(
       }
 
       // Fetch records from the data access layer based on the modelName
-      const fields = await dataAccess.getModelFields(model); // Use appropriate method here
-
+      const fields = await dataAccess.getModelData(model); // Use appropriate method here
+      
       // Process the records using the provided resources if needed
       // For example, you can transform the data before sending it to the client
       // const processedData = resources.processData(records);
@@ -200,6 +185,75 @@ export default function createDashboardMiddleware(
       });
     }
   });
+
+  // update 
+  app.put('/entities/:modelName/:id', async (req, res) => {
+    try {
+      const entityName = req.params.modelName?.toLowerCase();
+      // Check if the entityName is valid and exists in dataModels
+      const entityModel = dataModels.find((model) => model.name?.toLowerCase() === entityName);
+      if (!entityModel) {
+
+        res.status(404).json({ error: 'Entity not found' });
+        return;
+      }
+
+      // update record
+      const updatedRecord = await dataAccess.updateData(entityModel, req.params.id, req.body);
+
+      // Process the records using the provided resources if needed
+      // For example, you can transform the data before sending it to the client
+      const processedData = resources.processData(updatedRecord);
+
+      res.status(200).json({ success: true, data: processedData });
+
+    } catch (err) {
+      console.error('Error adding data:', err);
+      res.status(500).json({
+        error: {
+          message: 'An error occurred while fetching data',
+          meta: { err }
+        }
+      });
+    }
+  });
+
+  // delete
+  app.delete('/entities/:modelName/:id', async (req, res) => {
+    try {
+      const entityName = req.params.modelName?.toLowerCase();
+      // Check if the entityName is valid and exists in dataModels
+      const entityModel = dataModels.find((model) => model.name?.toLowerCase() === entityName);
+      if (!entityModel) {
+        res.status(404).json({ error: 'Entity not found' });
+        return;
+      }
+
+      // delete record
+      const deletedRecord = await dataAccess.deleteData(entityModel, req.params.id);
+
+      // Process the records using the provided resources if needed
+      // For example, you can transform the data before sending it to the client
+      const processedData = resources.processData(deletedRecord);
+
+      // deleted  doesn't return anything just send deleted status
+      res.status(204)
+
+    } catch (err) {
+      console.error('Error adding data:', err);
+      res.status(500).json({
+        error: {
+          message: 'An error occurred while fetching data',
+          meta: { err }
+        }
+      });
+    }
+  });
+
+
+
+
+
   // Add other routes and middleware as needed for your backend
   // ...
 
