@@ -17,7 +17,7 @@ export default function createDashboardMiddleware(
   ormName: string,
   config: any, // Replace 'any' with the appropriate type for the ORM configuration
   dataModels: any[], // Replace 'any[]' with the appropriate type for the dataModels array
-  resources: any, // Replace 'any' with the appropriate type for the resources
+  resources: any // Replace 'any' with the appropriate type for the resources
 ) {
   // Create the data access object using the Data Access Factory and config
   const dataAccess = createDataAccess(ormName, {
@@ -28,12 +28,14 @@ export default function createDashboardMiddleware(
 
   const connectionPromise = dataAccess.connect();
 
-  connectionPromise.then(() => {
-    console.log('Connected to the database using ' + ormName + '.');
-  }).catch((err) => {
-    console.error('Error connecting to the database:', err);
-    process.exit(1);
-  });
+  connectionPromise
+    .then(() => {
+      console.log('Connected to the database using ' + ormName + '.');
+    })
+    .catch((err) => {
+      console.error('Error connecting to the database:', err);
+      process.exit(1);
+    });
 
   // Define routes using the controller functions
   router.get('/entities', async (req, res) => {
