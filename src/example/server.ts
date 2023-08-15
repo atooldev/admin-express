@@ -1,6 +1,6 @@
 import express from 'express';
 import { DataSourceOptions } from 'typeorm';
-import createDashboardMiddleware from './dashboard';
+import createDashboardMiddleware from '../middleware/dashboardMiddleWare';
 import { User, Role, Post, UserProfile, } from './sources/typeorm/models';
 import cors from 'cors'
 import { Category } from './sources/typeorm/models/category.entity';

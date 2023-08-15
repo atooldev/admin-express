@@ -1,5 +1,55 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
-node_modules
+# Node.js
+node_modules/
 npm-debug.log
+yarn-error.log
+
+# Build output
+dist/
+out/
+
+# macOS
 .DS_Store
+
+# TypeScript
+*.tsbuildinfo
+
+# IDE and editor files
+.idea/
+.vscode/
+
+# Test results
+coverage/
+
+# Dependency lock files
+yarn.lock
+package-lock.jsonP
+
+# Environment variables
 .env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+
+# Generated files
+**/coverage/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+
+# JetBrains IDEs
+.idea/
+*.iml
+
+# Visual Studio Code
+.vscode/
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
