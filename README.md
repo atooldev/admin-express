@@ -23,12 +23,8 @@ import { createDashboardMiddleware } from '@atooldev/admin-express';
 2. Create an instance of Express and configure it:
 
 ```typescript
-const ormName = 'your-orm'; // Replace with your actual ORM name
-const ormConfig = {}; // Define your ORM configuration
-const dataModels = []; // Define your data models
-const resources = {
-  processData: (data) => data, // Define your resource processing logic
-};
+const app = express();
+app.use(express.json());
 ```
 
 3. Define your ORM configuration, data models, and resources:

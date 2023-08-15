@@ -1,7 +1,6 @@
 {
   "name": "@atooldev/admin-express",
-  "version": "1.0.3",
-  "main": "index.js",
+  "version": "1.0.5",
   "license": "MIT",
   "scripts": {
     "build": "tsc",
@@ -15,6 +14,10 @@
     "test": "jest --coverage --verbose",
     "start:example": "nodemon src/example/server.ts"
   },
+  "files": [
+    "dist/**"
+  ],
+  "main": "dist/index.js",
   "dependencies": {
     "@atooldev/orm-data-access": "^1.0.5",
     "body-parser": "^1.20.2",
